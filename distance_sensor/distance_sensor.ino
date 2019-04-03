@@ -25,6 +25,7 @@
 
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
+#include <Wire.h>
 
 // Watson IoT connection details
 #define MQTT_HOST "9qcd6d.messaging.internetofthings.ibmcloud.com"
@@ -44,6 +45,7 @@ const int button = 0;
 int buttonState = 0;
 const int trigPin = 4;
 const int echoPin = 5;
+const int lockedPin = 13;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -59,10 +61,13 @@ void setup() {
   pinMode(BUILTIN_LED, OUTPUT);     // Initialize the BUILTIN_LED pin as an output
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
+  pinMode(lockedPin, OUTPUT);
+  digitalWrite(lockedPin, LOW);
   Serial.begin(115200);
   setup_wifi();
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
+//  Wire.begin(); 
 }
 
 void setup_wifi() {
@@ -125,7 +130,6 @@ void reconnect() {
 }
 
 void loop() {
-
   if (!client.connected()) {
     reconnect();
   }
@@ -134,6 +138,9 @@ void loop() {
       buttonState = digitalRead(button); 
       if (buttonState == LOW) {
         locked = false;
+        digitalWrite(lockedPin, LOW);
+        Serial.print("Pin value: ");
+        Serial.println(digitalRead(lockedPin));
       }
     } else {
       // Clears the trigPin
@@ -150,7 +157,6 @@ void loop() {
       
       // Calculating the distance
       distance= duration*0.034/2;
-      // Prints the distance and duration on the Serial Monitor
       if (distance > 184) {
         Serial.println("Out of range");
       } else {
@@ -189,8 +195,12 @@ void loop() {
           delay(1000);
         }
         if (distance < 10 && counter == 5) {
-          String payload = "{ \"distance\" : true}";
+          String payload = "{ \"locked\" : true}";
           locked = true;
+          digitalWrite(lockedPin, LOW);
+          digitalWrite(lockedPin, HIGH);
+          Serial.print("Pin value: ");
+          Serial.println(digitalRead(lockedPin));
           if (client.publish(MQTT_TOPIC, (char*) payload.c_str())) {
             Serial.println("Message sent");
           } else {
