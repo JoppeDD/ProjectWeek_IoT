@@ -25,7 +25,6 @@
 
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
-#include <Wire.h>
 
 // Watson IoT connection details
 #define MQTT_HOST "9qcd6d.messaging.internetofthings.ibmcloud.com"
@@ -66,8 +65,7 @@ void setup() {
   Serial.begin(115200);
   setup_wifi();
   client.setServer(mqtt_server, 1883);
-  client.setCallback(callback);
-//  Wire.begin(); 
+  client.setCallback(callback); 
 }
 
 void setup_wifi() {
@@ -108,12 +106,14 @@ void callback(char* topic, byte* payload, unsigned int length) {
 //  } else {
 //    digitalWrite(BUILTIN_LED, HIGH);  // Turn the LED off by making the voltage HIGH
 //  }
-  Serial.print("Message arrived");
-  locked = false;
-  digitalWrite(lockedPin, LOW);
-  Serial.print("Pin value: ");
-  Serial.println(digitalRead(lockedPin));
-  Serial.println("Lock is unlocked");
+  if (locked){
+    Serial.print("Message arrived");
+    locked = false;
+    digitalWrite(lockedPin, LOW);
+    Serial.print("Pin value: ");
+    Serial.println(digitalRead(lockedPin));
+    Serial.println("Lock is unlocked");
+  }
 }
 
 void reconnect() {
