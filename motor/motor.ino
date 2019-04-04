@@ -5,7 +5,7 @@ const int lockedPin = 7;
 boolean locked = false;
 
 void setup() {
-  stepper.setSpeed(4);
+  stepper.setSpeed(6);
   pinMode(lockedPin, INPUT);
   Serial.begin(115200);
 }
@@ -14,13 +14,13 @@ void loop() {
    Serial.println(digitalRead(lockedPin));
    if(!locked){
     if(digitalRead(lockedPin)==HIGH){
-      stepper.step(500);
+      stepper.step(-510);
       locked = true;
     }
    }
    if(locked){
     if(digitalRead(lockedPin)==LOW){
-      stepper.step(-500);
+      stepper.step(510);
       locked=false;
     }
    }
