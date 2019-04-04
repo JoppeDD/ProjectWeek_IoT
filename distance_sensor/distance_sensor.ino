@@ -45,6 +45,8 @@ int buttonState = 0;
 const int trigPin = 4;
 const int echoPin = 5;
 const int lockedPin = 13;
+const int redLed = 10;
+const int greenLed = 9;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -61,6 +63,8 @@ void setup() {
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   pinMode(lockedPin, OUTPUT);
+  pinMode(redLed, OUTPUT);
+  pinMode(greenLed, OUTPUT);
   digitalWrite(lockedPin, LOW);
   Serial.begin(115200);
   setup_wifi();
@@ -113,6 +117,9 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.print("Pin value: ");
     Serial.println(digitalRead(lockedPin));
     Serial.println("Lock is unlocked");
+    digitalWrite(greenLed, HIGH);
+    digitalWrite(redLed, LOW);
+    delay(7000);
   }
 }
 
@@ -147,6 +154,9 @@ void loop() {
         digitalWrite(lockedPin, LOW);
         Serial.print("Pin value: ");
         Serial.println(digitalRead(lockedPin));
+        digitalWrite(redLed, LOW);
+        digitalWrite(greenLed, HIGH);
+        delay(7000);
       }
     } else {
       // Clears the trigPin
@@ -205,6 +215,8 @@ void loop() {
           locked = true;
           digitalWrite(lockedPin, LOW);
           digitalWrite(lockedPin, HIGH);
+          digitalWrite(redLed, HIGH);
+          digitalWrite(greenLed, LOW);
           Serial.print("Pin value: ");
           Serial.println(digitalRead(lockedPin));
           if (client.publish(MQTT_TOPIC, (char*) payload.c_str())) {
