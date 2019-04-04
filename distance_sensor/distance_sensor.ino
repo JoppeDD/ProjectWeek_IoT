@@ -45,8 +45,8 @@ int buttonState = 0;
 const int trigPin = 4;
 const int echoPin = 5;
 const int lockedPin = 13;
-const int redLed = 10;
-const int greenLed = 9;
+const int redLed = 15;
+const int greenLed = 12;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -66,6 +66,7 @@ void setup() {
   pinMode(redLed, OUTPUT);
   pinMode(greenLed, OUTPUT);
   digitalWrite(lockedPin, LOW);
+  digitalWrite(greenLed, HIGH);
   Serial.begin(115200);
   setup_wifi();
   client.setServer(mqtt_server, 1883);
